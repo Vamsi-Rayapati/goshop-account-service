@@ -6,7 +6,6 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"github.com/smartbot/account/database"
-	"github.com/smartbot/account/pkg/aws"
 	"github.com/smartbot/account/pkg/dbclient"
 	"github.com/smartbot/account/pkg/errors"
 	"github.com/smartbot/account/pkg/utils"
@@ -135,12 +134,6 @@ func (us *UserService) GetUser(id string) (*UserResponse, *errors.ApiError) {
 		return nil, errors.InternalServerError("Failed to get user")
 	}
 
-	var avatar string = "";
-	if user.Avatar != "" {
-		signedAvatarUrl, _ := aws.GetSignedUrl("goshop-avatar", user.Avatar)
-		avatar = *signedAvatarUrl
-	}
-
 	return &UserResponse{
 		ID:             user.ID.String(),
 		Username:       user.Username,
@@ -150,7 +143,7 @@ func (us *UserService) GetUser(id string) (*UserResponse, *errors.ApiError) {
 		PrimaryAddress: user.PrimaryAddress,
 		Mobile:         user.Mobile,
 		Role:           user.Role,
-		Avatar:         avatar,
+		Avatar:         user.Avatar,
 		Status:         user.Status,
 		CreatedAt:      user.CreatedAt.String(),
 	}, nil
@@ -178,8 +171,6 @@ func (us *UserService) UpdateUser(id string, request UpdateUserRequest) (*UserRe
 		return nil, errors.InternalServerError("Failed to update user")
 	}
 
-	signedAvatarUrl, _ := aws.GetSignedUrl("goshop-avatar", user.Avatar)
-
 	return &UserResponse{
 		ID:             user.ID.String(),
 		Username:       user.Username,
@@ -189,7 +180,7 @@ func (us *UserService) UpdateUser(id string, request UpdateUserRequest) (*UserRe
 		PrimaryAddress: user.PrimaryAddress,
 		Mobile:         user.Mobile,
 		Role:           user.Role,
-		Avatar:         *signedAvatarUrl,
+		Avatar:         user.Avatar,
 		Status:         user.Status,
 		CreatedAt:      user.CreatedAt.String(),
 	}, nil
