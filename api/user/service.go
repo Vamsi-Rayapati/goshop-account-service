@@ -55,6 +55,7 @@ func (us *UserService) AddUser(user CreateUserRequest) (*UserResponse, *errors.A
 	db := dbclient.GetCient()
 
 	newUser := database.User{
+		ID:        uuid.New(),
 		Username:  user.Username,
 		Mobile:    user.Mobile,
 		FirstName: user.FirstName,
